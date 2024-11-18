@@ -3,6 +3,7 @@ package br.com.marcus.ecommerce.services;
 import br.com.marcus.ecommerce.dto.ProductDTO;
 import br.com.marcus.ecommerce.entities.Product;
 import br.com.marcus.ecommerce.repositories.ProductRepository;
+import br.com.marcus.ecommerce.services.exeptions.ResourceNotFoundExeption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
-        return productRepository.findById(id).map(ProductDTO::new).orElse(null);
+        return productRepository.findById(id).map(ProductDTO::new).orElseThrow(() -> new ResourceNotFoundExeption("Produto não encontrado"));
     }
 
     @Transactional(readOnly = true)

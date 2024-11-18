@@ -13,6 +13,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Column(nullable = false, length = 60)
     private String name;
     @Column(columnDefinition = "TEXT")
     private String description;

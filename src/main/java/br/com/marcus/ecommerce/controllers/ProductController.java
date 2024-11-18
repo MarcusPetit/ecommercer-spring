@@ -4,6 +4,7 @@ import br.com.marcus.ecommerce.dto.ProductDTO;
 import br.com.marcus.ecommerce.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,7 +30,7 @@ public class ProductController {
 
     @GetMapping(value = "/page")
     public ResponseEntity<Page<ProductDTO>> findByPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                       @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
+                                                       @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
                                                        @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
                                                        @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
         return ResponseEntity.ok(productService.findByPage(page, linesPerPage, orderBy, direction));
@@ -37,8 +38,13 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO dto) {
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
-        return ResponseEntity.created(uri).body(productService.insert(dto));
+        try {
+            ProductDTO createdProduct = productService.insert(dto);
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdProduct.getId()).toUri();
+            return ResponseEntity.created(uri).body(createdProduct);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping(value = "/{id}")
