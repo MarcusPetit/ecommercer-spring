@@ -4,8 +4,11 @@ import br.com.marcus.ecommerce.dto.ProductDTO;
 import br.com.marcus.ecommerce.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -15,35 +18,38 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<ProductDTO> findAll() {
-        return productService.findAll();
+    public ResponseEntity<List<ProductDTO>> findAll() {
+        return ResponseEntity.ok(productService.findAll());
     }
 
     @GetMapping(value = "/{id}")
-    public ProductDTO findById(@PathVariable Long id) {
-        return productService.findById(id);
+    public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.findById(id));
     }
 
     @GetMapping(value = "/page")
-    public Page<ProductDTO> findByPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                       @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
-                                       @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
-                                       @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
-        return productService.findByPage(page, linesPerPage, orderBy, direction);
+    public ResponseEntity<Page<ProductDTO>> findByPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                       @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
+                                                       @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
+                                                       @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
+        return ResponseEntity.ok(productService.findByPage(page, linesPerPage, orderBy, direction));
     }
 
     @PostMapping
-    public ProductDTO insert(@RequestBody ProductDTO dto) {
-        return productService.insert(dto);
+    public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO dto) {
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(productService.insert(dto));
     }
 
     @PutMapping(value = "/{id}")
-    public ProductDTO update(@PathVariable Long id, @RequestBody ProductDTO dto) {
-        return productService.update(id, dto);
+    public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(productService.update(id, dto));
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         productService.delete(id);
+        return ResponseEntity.ok().body("Produto deletado com sucesso!");
     }
 }
