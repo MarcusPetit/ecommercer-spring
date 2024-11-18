@@ -7,7 +7,7 @@ public class CustomError {
     private Integer status;
     private String error;
     private String path;
-
+    
     public CustomError() {
     }
 

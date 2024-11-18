@@ -2,6 +2,8 @@ package br.com.marcus.ecommerce.controllers;
 
 import br.com.marcus.ecommerce.dto.ProductDTO;
 import br.com.marcus.ecommerce.services.ProductService;
+import jakarta.validation.UnexpectedTypeException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -37,12 +39,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO dto) {
+    public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
         try {
             ProductDTO createdProduct = productService.insert(dto);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdProduct.getId()).toUri();
             return ResponseEntity.created(uri).body(createdProduct);
-        } catch (Exception e) {
+        } catch (UnexpectedTypeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
