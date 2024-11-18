@@ -1,14 +1,14 @@
 package br.com.marcus.ecommerce.entities;
-
-
+import java.util.Set;
 
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tb_oder")
+@Table(name = "tb_order")
 public class Order {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +22,9 @@ public class Order {
 
   @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
   private Payment payment;
+
+  @OneToMany(mappedBy = "id.order")
+  private Set<OrderItem> items;
 
   public Order() {
   }
@@ -63,6 +66,14 @@ public class Order {
 
   public void setClient(User client) {
     this.client = client;
+  }
+
+  public Set<OrderItem> getItems() {
+    return items;
+  }
+
+  public List<Product> getProducts() {
+    return items.stream().map(OrderItem::getProduct).toList();
   }
 
   @Override
