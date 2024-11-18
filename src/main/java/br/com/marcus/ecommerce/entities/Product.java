@@ -1,4 +1,6 @@
 package br.com.marcus.ecommerce.entities;
+
+import br.com.marcus.ecommerce.dto.ProductDTO;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -36,6 +38,15 @@ public class Product {
         this.price = price;
         this.imgUrl = imgUrl;
         this.categories = categories;
+    }
+
+    public Product(ProductDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.price = dto.getPrice();
+        this.imgUrl = dto.getImgUrl();
+
     }
 
     public Long getId() {
@@ -85,6 +96,7 @@ public class Product {
     public Set<OrderItem> getItems() {
         return items;
     }
+
     public List<Order> getOrders() {
         return items.stream().map(OrderItem::getOrder).toList();
     }
